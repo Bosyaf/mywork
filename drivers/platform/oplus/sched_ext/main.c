@@ -414,6 +414,7 @@ static int __init hmbird_common_init(void)
 
 static void __exit hmbird_common_exit(void)
 {
+	remove_proc_subtree(HMBIRD_SCHED_PROC_DIR, NULL);
 }
 
 module_init(hmbird_common_init);
