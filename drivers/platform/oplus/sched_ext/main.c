@@ -145,9 +145,7 @@ HMBIRD_PROC_OPS(scx_enable, hmbird_common_open, scx_enable_proc_write);
 #define MAX_STATS_BUF	(2000)
 static int hmbird_stats_proc_show(struct seq_file *m, void *v)
 {
-	char buf[MAX_STATS_BUF] = {0};
-
-	seq_printf(m, "%s\n", buf);
+	seq_printf(m, "\n");
 	return 0;
 }
 
