@@ -15,36 +15,36 @@
 #define LOAD_TRACK_DIR          "slim_walt"
 #define HMBIRD_PROC_PERMISSION  0666
 
-int scx_enable = 1;
-int partial_enable;
-int cpuctrl_high_ratio = 75;
-int cpuctrl_low_ratio = 45;
-int slim_stats;
-int hmbirdcore_debug = 0;
-int slim_for_app;
-int misfit_ds = 95;
-unsigned int highres_tick_ctrl = 1;
-unsigned int highres_tick_ctrl_dbg;
-int cpu7_tl = 85;
-int slim_walt_ctrl = 1;
-int slim_walt_dump;
-int slim_walt_policy;
-int slim_gov_debug;
-int scx_gov_ctrl = 1;
-int sched_ravg_window_frame_per_sec = 120;
-int parctrl_high_ratio = 75;
-int parctrl_low_ratio = 50;
-int parctrl_high_ratio_l = 80;
-int parctrl_low_ratio_l = 60;
-int isoctrl_high_ratio = 85;
-int isoctrl_low_ratio = 65;
-int isolate_ctrl;
-int iso_free_rescue;
-int heartbeat;
-int heartbeat_enable = 1;
-int watchdog_enable;
-int save_gov;
-unsigned int cpu_cluster_masks;
+static int scx_enable = 1;
+static int partial_enable = 1;
+static int cpuctrl_high_ratio = 78;
+static int cpuctrl_low_ratio = 48;
+static int slim_stats;
+static int hmbirdcore_debug = 0;
+static int slim_for_app = 1;
+static int misfit_ds = 92;
+static unsigned int highres_tick_ctrl = 1;
+static unsigned int highres_tick_ctrl_dbg;
+static int cpu7_tl = 83;
+static int slim_walt_ctrl = 1;
+static int slim_walt_dump;
+static int slim_walt_policy = 1;
+static int slim_gov_debug;
+static int scx_gov_ctrl = 1;
+static int sched_ravg_window_frame_per_sec = 120;
+static int parctrl_high_ratio = 78;
+static int parctrl_low_ratio = 52;
+static int parctrl_high_ratio_l = 82;
+static int parctrl_low_ratio_l = 62;
+static int isoctrl_high_ratio = 86;
+static int isoctrl_low_ratio = 66;
+static int isolate_ctrl = 1;
+static int iso_free_rescue = 1;
+static int heartbeat;
+static int heartbeat_enable = 1;
+static int watchdog_enable = 1;
+static int save_gov;
+static unsigned int cpu_cluster_masks;
 
 char saved_gov[NR_CPUS][16];
 
@@ -174,15 +174,20 @@ HMBIRD_PROC_OPS(sched_ravg_window_frame_per_sec, hmbird_common_open,
 /* sched_ravg_window_frame_per_sec ops end */
 
 static ssize_t save_gov_str(struct file *file, const char __user *buf,
-					size_t count, loff_t *ppos)
+				size_t count, loff_t *ppos)
 {
 	int cpu;
 	struct cpufreq_policy *policy;
 
 	for_each_present_cpu(cpu) {
 		policy = cpufreq_cpu_get(cpu);
-		if (cpu != policy->cpu)
+		if (!policy)
 			continue;
+		if (cpu != policy->cpu) {
+			cpufreq_cpu_put(policy);
+			continue;
+		}
+		cpufreq_cpu_put(policy);
 	}
 	return count;
 }
